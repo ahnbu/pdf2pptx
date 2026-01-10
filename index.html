@@ -384,19 +384,20 @@
       bottom: 2rem;
       left: 50%;
       transform: translateX(-50%);
-      background-color: var(--card-bg);
-      color: white;
-      padding: 0.75rem 1.5rem;
+      background-color: rgba(15, 23, 42, 0.95);
+      color: var(--text-primary);
+      padding: 0.75rem 2rem;
       border-radius: 999px;
-      box-shadow: var(--shadow-lg);
-      font-size: 0.9rem;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+      font-size: 0.95rem;
+      font-weight: 600;
       z-index: 2000;
       display: flex;
       align-items: center;
-      gap: 0.5rem;
-      border: 1px solid var(--border-color);
+      gap: 0.75rem;
+      border: 1px solid var(--primary);
       opacity: 0;
-      transition: opacity 0.3s ease, transform 0.3s ease;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       pointer-events: none;
     }
 
