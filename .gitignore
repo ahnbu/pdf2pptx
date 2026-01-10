@@ -1,10 +1,9 @@
 # Temporary Files
 temp/
-/temp
 
 # Build Output
 dist_v2/
-/dist_v2
+dist/
 
 # OS generated files
 .DS_Store
