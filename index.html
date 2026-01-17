@@ -498,6 +498,52 @@
       color: var(--primary);
       text-decoration: underline;
     }
+    /* Toggle Switch */
+    .toggle-container {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .toggle-switch {
+      position: relative;
+      width: 44px;
+      height: 22px;
+      background-color: var(--bg-card-hover);
+      border-radius: 999px;
+      border: 1px solid var(--border-color);
+      transition: all 0.3s;
+    }
+
+    .toggle-switch::after {
+      content: "";
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 16px;
+      height: 16px;
+      background-color: var(--text-secondary);
+      border-radius: 50%;
+      transition: all 0.3s;
+    }
+
+    input:checked + .toggle-switch {
+      background-color: var(--primary);
+      border-color: var(--primary);
+    }
+
+    input:checked + .toggle-switch::after {
+      left: calc(100% - 18px);
+      background-color: white;
+    }
+
+    .toggle-label {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
   </style>
 </head>
 
@@ -536,6 +582,15 @@
             <span id="pdfFileName" class="file-name">filename.pdf</span>
             <span id="pdfPageCount" class="badge">0 pages</span>
             <button id="btnPdfReset" class="btn-text small">다른 파일 업로드</button>
+          </div>
+
+          <!-- Watermark Toggle -->
+          <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color); display: flex; justify-content: center;">
+            <label class="toggle-container">
+              <input type="checkbox" id="toggleWatermark" checked hidden>
+              <div class="toggle-switch"></div>
+              <span class="toggle-label">워터마크 제거 (NotebookLM)</span>
+            </label>
           </div>
         </div>
 
@@ -608,6 +663,8 @@
     // State
     let currentPdfDoc = null;
     let currentPdfBlobs = []; // { blob, filename, index }
+    let currentFile = null; // Store for re-rendering on toggle
+    const toggleWatermark = document.getElementById('toggleWatermark');
 
     // Elements
     const dropZone = document.getElementById('pdfDropZone');
@@ -649,12 +706,20 @@
     btnReset.addEventListener('click', () => {
       currentPdfDoc = null;
       currentPdfBlobs = [];
+      currentFile = null;
       resultContainer.innerHTML = '';
       resultContainer.classList.add('hidden');
       toolbar.classList.add('hidden');
       fileInfo.classList.add('hidden');
       dropZone.classList.remove('hidden');
       fileInput.value = '';
+    });
+
+    // Re-render when watermark toggle changes
+    toggleWatermark.addEventListener('change', () => {
+      if (currentFile) {
+        handlePdf(currentFile);
+      }
     });
 
     async function handlePdf(file) {
@@ -675,6 +740,7 @@
         pageCountEl.textContent = `${pdf.numPages} pages`;
 
         // Render Pages
+        currentFile = file;
         await renderPdfPages(pdf, file.name);
       } catch (e) {
         console.error(e);
@@ -695,7 +761,7 @@
 
       for (let i = 1; i <= pdf.numPages; i++) {
         const page = await pdf.getPage(i);
-        const viewport = page.getViewport({ scale: 1.5 }); // Good quality preview
+        const viewport = page.getViewport({ scale: 2.0 }); // High quality for watermark removal
 
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
@@ -703,6 +769,11 @@
         canvas.height = viewport.height;
 
         await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+
+        // Apply Watermark Removal if enabled
+        if (toggleWatermark.checked) {
+          removeWatermark(ctx, canvas.width, canvas.height);
+        }
 
         // To Blob
         const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
@@ -881,6 +952,44 @@
         lucide.createIcons({ root: btnDlPptx });
       }
     });
+
+    // --- Watermark Removal Logic ---
+    function removeWatermark(ctx, width, height) {
+      // Coordinates based on NotebookLM PDF analysis (Scale 2.0 reference)
+      // Extended to cover bottom-right margins (Margin 0)
+      const rect_w = 227;
+      const rect_h = 57;
+      const dest_x = width - 227;
+      const dest_y = height - 57;
+
+      // Use left area (clean background) as source
+      const source_x = dest_x - rect_w - 6;
+      const source_y = dest_y;
+
+      if (source_x >= 0 && source_y >= 0) {
+        // Copy clean area to watermark area
+        ctx.drawImage(
+          ctx.canvas,
+          source_x, source_y, rect_w, rect_h, // Source
+          dest_x, dest_y, rect_w, rect_h      // Destination
+        );
+      } else {
+        // Fallback: Fill with average color of nearby region if left side is not available
+        try {
+          const region = ctx.getImageData(dest_x - 10, dest_y, 10, rect_h);
+          let r = 0, g = 0, b = 0, count = region.data.length / 4;
+          for (let i = 0; i < region.data.length; i += 4) {
+            r += region.data[i]; g += region.data[i + 1]; b += region.data[i + 2];
+          }
+          ctx.fillStyle = `rgb(${Math.round(r / count)}, ${Math.round(g / count)}, ${Math.round(b / count)})`;
+          ctx.fillRect(dest_x, dest_y, rect_w, rect_h);
+        } catch (e) {
+          // If all else fails, use white
+          ctx.fillStyle = 'white';
+          ctx.fillRect(dest_x, dest_y, rect_w, rect_h);
+        }
+      }
+    }
 
     // --- Modal ---
     window.openModal = function (url, title) {
