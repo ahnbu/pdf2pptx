@@ -15,7 +15,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <!-- <title>PDF to Slide Converter</title> -->
-  <title>NotebookLM 변환기</title>
+  <title>NotebookLM 로고 클리너</title>
   <!-- Favicon (Layers Icon) -->
   <link rel="icon"
     href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236366f1' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z'/><path d='m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65'/><path d='m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65'/></svg>">
@@ -674,6 +674,45 @@
       .steps-grid { grid-template-columns: 1fr; }
       .features-grid { grid-template-columns: 1fr; }
     }
+    .hero-section {
+      text-align: center;
+      margin-bottom: 3.5rem;
+      animation: fadeInDown 0.8s ease-out;
+    }
+
+    .hero-section h2 {
+      font-size: 2.8rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+      letter-spacing: -0.03em;
+      line-height: 1.2;
+    }
+
+    .hero-section .highlight {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: inline-block;
+    }
+
+    .hero-section p {
+      font-size: 1.25rem;
+      color: var(--text-secondary);
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 768px) {
+      .hero-section h2 { font-size: 2rem; }
+      .hero-section p { font-size: 1.1rem; }
+    }
   </style>
 </head>
 
@@ -685,21 +724,25 @@
         <div class="logo-icon"><i data-lucide="layers" size="32"></i></div>
         <div class="logo-text">
           <!-- <h1>PDF to PPTX Converter</h1> -->
-          <h1>NotebookLM 변환기</h1>
+          <h1>NotebookLM 로고 클리너</h1>
         </div>
       </div>
     </header>
 
     <main>
+      <!-- Hero Copy Section -->
+      <section class="hero-section">
+        <h2>NotebookLM 로고, 이제 <span class="highlight">1초 만에 지우세요.</span></h2>
+        <p>워터마크 없는 깔끔한 PPT, PDF, 이미지로 즉시 변환해 드립니다.</p>
+      </section>
+
       <section id="pdfSection" class="glass-panel">
         <!-- Top: Info & Upload -->
         <div id="pdfTopArea" class="pdf-top-area">
           <div id="pdfDropZone" class="upload-content pdf-drop">
             <div class="icon-cloud"><i data-lucide="file-text"></i></div>
-            <h2>노트북LM 로고 제거와 PPT변환을 한번에!</h2>
-            <!-- <p>PDF(15p) 기준 약 10초 미만 소요됩니다.</p> -->
-            <!-- <p>(서버 전송 없음, 100% 로컬에서 처리됩니다)</p> -->
-             <p>(PDF 업로드하면 10초 내 완료!)</p>
+            <h2>변환할 PDF를 여기에 놓으세요</h2>
+            <p>(자동으로 로고 제거 및 PPT 변환 시작)</p>
             <input type="file" id="pdfInput" accept="application/pdf" hidden>
           </div>
 
@@ -715,7 +758,7 @@
             <label class="toggle-container">
               <input type="checkbox" id="toggleWatermark" checked hidden>
               <div class="toggle-switch"></div>
-              <span class="toggle-label">워터마크 제거 (NotebookLM)</span>
+              <span class="toggle-label">NotebookLM 로고 제거</span>
             </label>
           </div>
         </div>
@@ -755,7 +798,7 @@
             <span class="step-number">Step 1</span>
             <div class="step-icon"><i data-lucide="sparkles" size="36"></i></div>
             <h3>NotebookLM 준비</h3>
-            <p>Google NotebookLM에서 소스를 추가하고<br>슬라이드 덱(Slide Deck)을 생성하세요.</p>
+            <p>Google NotebookLM에서 소스를 추가하고<br>슬라이드 덱을 생성하세요.</p>
           </div>
           <div class="step-card glass-panel">
             <span class="step-number">Step 2</span>
@@ -767,7 +810,7 @@
             <span class="step-number">Step 3</span>
             <div class="step-icon"><i data-lucide="zap" size="36"></i></div>
             <h3>변환 및 다운로드</h3>
-            <p>AI가 워터마크를 자동으로 제거합니다.<br>PPTX, PDF, 이미지 중 선택하여 저장하세요.</p>
+            <p>워터마크를 자동으로 제거됩니다.<br>PPTX, PDF, 이미지 중 선택하여 저장하세요.</p>
           </div>
         </div>
       </section>
