@@ -25,6 +25,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <script src="https://cdn.jsdelivr.net/gh/gitbrent/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
   <style>
     /* Embedded CSS from style.css */
@@ -552,6 +553,127 @@
       font-weight: 600;
       color: var(--text-primary);
     }
+    .info-section {
+      margin-top: 5rem;
+      text-align: center;
+    }
+
+    .section-title {
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: 3rem;
+      background: linear-gradient(to right, #fff, var(--text-secondary));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.02em;
+    }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-bottom: 6rem;
+    }
+
+    .step-card {
+      padding: 3rem 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .step-card:hover {
+      transform: translateY(-8px);
+      border-color: var(--primary);
+      background-color: rgba(30, 41, 59, 0.8);
+    }
+
+    .step-number {
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      background: rgba(99, 102, 241, 0.15);
+      padding: 0.4rem 1rem;
+      border-radius: 999px;
+    }
+
+    .step-icon {
+      color: var(--primary);
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(99, 102, 241, 0.05));
+      padding: 1.5rem;
+      border-radius: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: inset 0 0 0 1px rgba(99, 102, 241, 0.2);
+    }
+
+    .step-card h3 {
+      font-size: 1.4rem;
+      margin: 0;
+      font-weight: 700;
+    }
+
+    .step-card p {
+      color: var(--text-secondary);
+      font-size: 1rem;
+      margin: 0;
+      line-height: 1.7;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .feature-card {
+      padding: 2.5rem;
+      text-align: left;
+      display: flex;
+      gap: 1.5rem;
+      align-items: flex-start;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      transition: all 0.3s ease;
+    }
+
+    .feature-card:hover {
+      border-color: var(--accent);
+      background-color: rgba(30, 41, 59, 0.8);
+    }
+
+    .feature-icon {
+      color: var(--accent);
+      background: rgba(56, 189, 248, 0.1);
+      padding: 0.85rem;
+      border-radius: 0.75rem;
+      flex-shrink: 0;
+    }
+
+    .feature-text h3 {
+      font-size: 1.25rem;
+      margin: 0 0 0.6rem 0;
+      font-weight: 700;
+    }
+
+    .feature-text p {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      margin: 0;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 768px) {
+      .section-title { font-size: 1.75rem; }
+      .steps-grid { grid-template-columns: 1fr; }
+      .features-grid { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 
@@ -589,7 +711,7 @@
           </div>
 
           <!-- Watermark Toggle -->
-          <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color); display: flex; justify-content: center;">
+          <div style="margin-top: 1rem; display: flex; justify-content: center;">
             <label class="toggle-container">
               <input type="checkbox" id="toggleWatermark" checked hidden>
               <div class="toggle-switch"></div>
@@ -612,6 +734,9 @@
             <button id="btnDownloadPptx" class="btn-primary small">
               <i data-lucide="presentation"></i> PPTX 다운로드
             </button>
+            <button id="btnDownloadPdf" class="btn-secondary small">
+              <i data-lucide="file-text"></i> PDF 다운로드
+            </button>
             <button id="btnDownloadImages" class="btn-secondary small">
               <i data-lucide="image"></i> 이미지 다운로드
             </button>
@@ -620,6 +745,59 @@
 
         <!-- Results Grid -->
         <div id="pdfResultContainer" class="pdf-results hidden"></div>
+      </section>
+
+      <!-- How it Works Step Section -->
+      <section class="info-section">
+        <h2 class="section-title">3단계로 빠르게 변환하기</h2>
+        <div class="steps-grid">
+          <div class="step-card glass-panel">
+            <span class="step-number">Step 1</span>
+            <div class="step-icon"><i data-lucide="sparkles" size="36"></i></div>
+            <h3>NotebookLM 준비</h3>
+            <p>Google NotebookLM에서 소스를 추가하고<br>슬라이드 덱(Slide Deck)을 생성하세요.</p>
+          </div>
+          <div class="step-card glass-panel">
+            <span class="step-number">Step 2</span>
+            <div class="step-icon"><i data-lucide="upload-cloud" size="36"></i></div>
+            <h3>PDF 업로드</h3>
+            <p>생성된 PDF 파일을 위에 있는<br>드래그 영역에 업로드합니다.</p>
+          </div>
+          <div class="step-card glass-panel">
+            <span class="step-number">Step 3</span>
+            <div class="step-icon"><i data-lucide="zap" size="36"></i></div>
+            <h3>변환 및 다운로드</h3>
+            <p>AI가 워터마크를 자동으로 제거합니다.<br>PPTX, PDF, 이미지 중 선택하여 저장하세요.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Key Features Section -->
+      <section class="info-section" style="margin-bottom: 4rem;">
+        <div style="width: 50px; height: 1px; background: var(--border-color); margin: 0 auto 3rem auto; opacity: 0.5;"></div>
+        <div class="features-grid">
+          <div class="feature-card glass-panel">
+            <div class="feature-icon"><i data-lucide="files" size="28"></i></div>
+            <div class="feature-text">
+              <h3>다양한 포맷 지원</h3>
+              <p>파워포인트(PPTX), 고화질 이미지(PNG), PDF 등 발표에 필요한 모든 형식을 지원합니다.</p>
+            </div>
+          </div>
+          <div class="feature-card glass-panel">
+            <div class="feature-icon"><i data-lucide="shield-check" size="28"></i></div>
+            <div class="feature-text">
+              <h3>100% 비공개 및 안전</h3>
+              <p>서버 업로드 없이 모든 처리가 브라우저 내에서 100% 로컬로 진행되어 보안이 완벽합니다.</p>
+            </div>
+          </div>
+          <div class="feature-card glass-panel">
+            <div class="feature-icon"><i data-lucide="image" size="28"></i></div>
+            <div class="feature-text">
+              <h3>원본 품질 유지</h3>
+              <p>고급 마스킹 기법을 통해 배경을 자연스럽게 복구하며, 이미지와 텍스트 품질을 그대로 유지합니다.</p>
+            </div>
+          </div>
+        </div>
       </section>
     </main>
 
@@ -690,6 +868,7 @@
     const selectionCountEl = document.getElementById('selectionCount');
     const selectAllCheck = document.getElementById('pdfSelectAll');
     const btnDlPptx = document.getElementById('btnDownloadPptx');
+    const btnDlPdf = document.getElementById('btnDownloadPdf');
     const btnDlImages = document.getElementById('btnDownloadImages');
 
     // Toast Function
@@ -961,6 +1140,91 @@
         btnDlPptx.innerHTML = originalText;
         btnDlPptx.disabled = false;
         lucide.createIcons({ root: btnDlPptx });
+      }
+    });
+
+    // 3. PDF Download (Client-side)
+    btnDlPdf.addEventListener('click', async () => {
+      const targetBlobs = getTargetBlobs();
+      if (targetBlobs.length === 0) {
+        showToast('선택된 페이지가 없습니다.');
+        return;
+      }
+
+      const originalText = btnDlPdf.innerHTML;
+      btnDlPdf.innerHTML = `<i data-lucide="loader-2" class="animate-spin"></i> 생성 중...`;
+      btnDlPdf.disabled = true;
+      lucide.createIcons({ root: btnDlPdf });
+
+      try {
+        const { jsPDF } = window.jspdf;
+
+        // Step 1: Pre-load the first image to get correct dimensions for PDF initialization
+        const firstItem = targetBlobs[0];
+        const firstImgData = await new Promise(resolve => {
+          const reader = new FileReader();
+          reader.onload = (e) => resolve(e.target.result);
+          reader.readAsDataURL(firstItem.blob);
+        });
+
+        const firstImg = new Image();
+        await new Promise(resolve => {
+          firstImg.onload = resolve;
+          firstImg.src = firstImgData;
+        });
+
+        // Initialize PDF with the first image's actual size
+        const doc = new jsPDF({
+          orientation: firstImg.width > firstImg.height ? 'landscape' : 'portrait',
+          unit: 'px',
+          format: [firstImg.width, firstImg.height]
+        });
+
+        for (let i = 0; i < targetBlobs.length; i++) {
+          const item = targetBlobs[i];
+          let imgData, imgWidth, imgHeight;
+
+          if (i === 0) {
+            // Use already loaded data for the first page
+            imgData = firstImgData;
+            imgWidth = firstImg.width;
+            imgHeight = firstImg.height;
+          } else {
+            // Load subsequent images
+            imgData = await new Promise(resolve => {
+              const reader = new FileReader();
+              reader.onload = (e) => resolve(e.target.result);
+              reader.readAsDataURL(item.blob);
+            });
+
+            const img = new Image();
+            await new Promise(resolve => {
+              img.onload = resolve;
+              img.src = imgData;
+            });
+            imgWidth = img.width;
+            imgHeight = img.height;
+
+            // Add new page with correct dimensions
+            doc.addPage([imgWidth, imgHeight], imgWidth > imgHeight ? 'landscape' : 'portrait');
+          }
+
+          // Draw image to fills the entire page
+          doc.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+        }
+
+        const originalName = fileNameEl.textContent.trim();
+        const baseName = originalName.toLowerCase().endsWith('.pdf') ? originalName.slice(0, -4) : originalName;
+        doc.save(`${baseName}_변환.pdf`);
+
+        showToast(`PDF 다운로드 완료! (${targetBlobs.length} 페이지)`);
+      } catch (e) {
+        console.error(e);
+        showToast('PDF 생성 실패');
+      } finally {
+        btnDlPdf.innerHTML = originalText;
+        btnDlPdf.disabled = false;
+        lucide.createIcons({ root: btnDlPdf });
       }
     });
 

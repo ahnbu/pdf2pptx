@@ -5,6 +5,8 @@ temp/
 dist_v2/
 dist/
 watermark_remover/
+text_remover/
+docs/
 
 # OS generated files
 .DS_Store
