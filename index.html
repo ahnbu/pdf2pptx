@@ -1126,11 +1126,24 @@
             // console.log('[DEBUG] >>> 로고 제거 건너뜀 (OFF 상태). 페이지:', i);
           }
 
-          // To Blob
+          // Downscale to 1.5x (User requested optimal balance) for final storage with Lossless PNG
+          const originalViewport = page.getViewport({ scale: 2.0 });
+          const outCanvas = document.createElement("canvas");
+          outCanvas.width = originalViewport.width;
+          outCanvas.height = originalViewport.height;
+          const outCtx = outCanvas.getContext("2d");
+
+          outCtx.imageSmoothingEnabled = true;
+          outCtx.imageSmoothingQuality = "high";
+          outCtx.drawImage(canvas, 0, 0, outCanvas.width, outCanvas.height);
+
+          // To Blob from the 1.5x canvas as PNG
           const blob = await new Promise((resolve) =>
-            canvas.toBlob(resolve, "image/png"),
+            // outCanvas.toBlob(resolve, "image/png"),
+            outCanvas.toBlob(resolve, "image/jpeg", 0.95),
           );
-          const filename = `${baseName}_page_${String(i).padStart(3, "0")}.png`;
+          // const filename = `${baseName}_page_${String(i).padStart(3, "0")}.png`;
+          const filename = `${baseName}_page_${String(i).padStart(3, "0")}.jpg`;
 
           const thumbUrl = URL.createObjectURL(blob);
 
@@ -1339,14 +1352,14 @@
             const item = targetBlobs[i];
             let imgWidth, imgHeight, finalImgData;
 
-            // Load image to get dimensions and convert to JPEG for PDF size optimization
-            const img = new Image();
+            // Load image to get dimensions from the already stored PNG blob
             const pngDataUrl = await new Promise((resolve) => {
               const reader = new FileReader();
               reader.onload = (e) => resolve(e.target.result);
               reader.readAsDataURL(item.blob);
             });
 
+            const img = new Image();
             await new Promise((resolve) => {
               img.onload = resolve;
               img.src = pngDataUrl;
@@ -1354,16 +1367,7 @@
 
             imgWidth = img.width;
             imgHeight = img.height;
-
-            // Convert PNG to JPEG (0.8 quality) using a temporary canvas to save memory and avoid RangeError
-            const tempCanvas = document.createElement("canvas");
-            tempCanvas.width = imgWidth;
-            tempCanvas.height = imgHeight;
-            const tempCtx = tempCanvas.getContext("2d");
-            tempCtx.fillStyle = "#FFFFFF";
-            tempCtx.fillRect(0, 0, imgWidth, imgHeight);
-            tempCtx.drawImage(img, 0, 0);
-            finalImgData = tempCanvas.toDataURL("image/jpeg", 0.8);
+            finalImgData = pngDataUrl;
 
             if (i === 0) {
               // Initialize PDF with the first page's orientation and size
@@ -1380,7 +1384,7 @@
               );
             }
 
-            // Draw image to fills the entire page
+            // Draw image to fills the entire page using JPEG format
             doc.addImage(
               finalImgData,
               "JPEG",
