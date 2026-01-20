@@ -1160,8 +1160,8 @@
           card.dataset.index = i;
 
           card.innerHTML = `
-                <div class="pdf-thumb-container">
-                    <label class="custom-checkbox page-checkbox">
+                <div class="pdf-thumb-container" onclick="openModal('${thumbUrl}', 'Page ${i}')">
+                    <label class="custom-checkbox page-checkbox" onclick="event.stopPropagation()">
                         <input type="checkbox" class="pdf-check-input" data-index="${i}">
                         <span class="checkmark"></span>
                     </label>
@@ -1169,8 +1169,8 @@
                 </div>
                 <div class="page-info">
                     <span>Page ${i}</span>
-                    <button class="btn-icon" onclick="openModal('${thumbUrl}', 'Page ${i}')" title="크게 보기">
-                        <i data-lucide="eye"></i>
+                    <button class="btn-icon" onclick="downloadSingleImage(${i})" title="이미지 다운로드">
+                        <i data-lucide="download"></i>
                     </button>
                 </div>
             `;
@@ -1254,6 +1254,13 @@
         }
         downloadImages(targets);
       });
+
+      function downloadSingleImage(index) {
+        const item = currentPdfBlobs.find((b) => b.index === index);
+        if (item) {
+          saveBlob(item.blob, item.filename);
+        }
+      }
 
       async function downloadImages(items) {
         if (items.length === 0) return;
@@ -1465,10 +1472,16 @@
 
       // --- Modal ---
       window.openModal = function (url, title) {
+        const index = parseInt(title.replace('Page ', ''));
+        const item = currentPdfBlobs.find(b => b.index === index);
+        const filename = item ? item.filename : 'image.jpg';
+
         document.getElementById("modalTitle").textContent = title;
         document.getElementById("modalPreviewContainer").innerHTML =
           `<img src="${url}" style="width:100%; height:100%; object-fit:contain;">`;
-        document.getElementById("modalBtnDownloadBg").href = url;
+        const downloadBtn = document.getElementById("modalBtnDownloadBg");
+        downloadBtn.href = url;
+        downloadBtn.download = filename;
         document.getElementById("previewModal").classList.remove("hidden");
       };
       window.closeModal = function () {
