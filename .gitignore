@@ -27,3 +27,4 @@ node_modules/
 .current-session-id
 .env
 .temp/
+.codegraph/
