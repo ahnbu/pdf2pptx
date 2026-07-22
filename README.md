@@ -1,5 +1,25 @@
 # NotebookLM 로고 클리너 (NotebookLM Logo Cleaner)
 
+## 서비스 정보
+
+> 최종 확인: 2026-07-22
+
+| 항목 | 값 |
+|---|---|
+| 서비스 URL | https://pdf2pptx.pages.dev/ |
+| 상태 | ✅ 정상 |
+| 호스팅 | Cloudflare Pages — 대시보드에서 레포 직접 연결(레포에 배포 설정 파일 없음) |
+| 구조 | **CDN 단일 HTML** — `unpkg`(lucide) · `cdnjs`(pdf.js, jszip) · `jsdelivr`(pptxgenjs). 빌드 도구 없음 |
+| DB | ❌ 없음 (브라우저 내 처리) |
+| 인증 | ❌ 없음 |
+| 외부 API | 없음 (클라이언트 전용 처리) |
+| 분석 도구 | Google Analytics `G-6CZ06GPR9P` |
+| 필요 환경변수 | 없음 |
+
+> ⚠️ **URL과 레포 이름이 어긋나 있다.** CF Pages 프로젝트명이 `pdf2pptx`라서 주소가 `pdf2pptx.pages.dev`이지만, 서빙되는 것은 이 레포의 `index.html`이다. PDF→PPTX 변환기와 NotebookLM 로고 클리너가 한 페이지에 합쳐진 형태다.
+>
+> ℹ️ **혼동 주의**: `pdf2pptx-v2.pages.dev`(v2 있음)는 **별개 서비스**다. 그쪽은 `pdf2pptx_aistudio` 레포(React + Vite)를 서빙하는 실험 버전이며, 기능이 비슷하지만 다른 프로젝트다. 상시 사용하는 쪽은 **이 레포(`pdf2pptx.pages.dev`)** 다.
+
 > **구글 NotebookLM**에서 생성된 PDF를 분석하여 **워터마크를 자동으로 제거**하고, **편집 가능한 PowerPoint (PPTX)** 파일로 변환해주는 웹 도구입니다.
 
 이 프로젝트는 NotebookLM이 생성해주는 요약 및 슬라이드 자료에서 로고를 깔끔하게 지우고, 실제 프레젠테이션 환경에서 즉시 활용할 수 있도록 제작되었습니다. 모든 과정은 **100% 브라우저 로컬 환경**에서 처리되어 보안이 유지됩니다.
